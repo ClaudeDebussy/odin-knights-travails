@@ -1,9 +1,21 @@
 class Square {
   constructor(position = [0,0]) {
+    if (
+      !position || 
+      !Array.isArray(position) || 
+      position.length != 2 || 
+      position[0] > 7 || 
+      position[0] < 0 || 
+      position[1] > 7 || 
+      position[1] < 0
+    ) {
+        throw new Error(`Invalid start data: ${position}`);
+      }
+
     this.position = position
-    this.moveNumber = 0
+    this.moveNumber = null
     this.previousSquare = null
-    this.validMovesFromSquare = this.#findValidMoves(this.position)
+    this.validMoves = this.#findValidMoves(this.position)
   }
 
   #findValidMoves(position) {
@@ -38,39 +50,70 @@ class Square {
   }
 
   printMoves(){
-    this.validMovesFromSquare.forEach(move => {
+    this.validMoves.forEach(move => {
       console.log(move)
     })
   }
 }
 
 class Knight {
-  knightMoves(start, destination) {
-    if (
-      !start || 
-      Array.isArray(start) || 
-      start.length != 2 || 
-      start[0] > 7 || 
-      start[0] < 0 || 
-      start[1] > 7 || 
-      start[1] < 0
-    ) {
-        throw new Error("Invalid start data.");
-      }
-
+  knightMoves(start = [0,0], destination) {
     let queue = []
     let pointer = 0
-    let currentNode
+    let currentNode = new Square(start)
     
-    queue.push(start)
-    while (queue.length) {
-      currentNode = queue[pointer]    
-      // Add all valid moves from current node
+    queue.push(currentNode)
+    while (pointer != queue.length) {
+      currentNode = queue[pointer]
+      const validMoves = currentNode.validMoves
+      const position = currentNode.position  
 
+      // Enqueue all valid moves from current node
+      let queueOfValidMoves = this.#resolveMove(validMoves, currentNode)
+      queueOfValidMoves.forEach(move => {
+        if (!queue.includes(move)) {
+          queue.push(move)
+        } else {
+          console.log("already there")
+        }
+      });
+      console.log(` Queue length: ${queue.length}`)
       pointer++
     }
   }
+
+  #resolveMove(validMoves, currentNode) {
+    console.log(validMoves)
+    let nodes = []
+    const MOVES = [
+      ["upRight", [1, 2]],
+      ["rightUp", [2, 1]],
+      ["rightDown", [2, -1]],
+      ["downRight", [1, -2]],
+      ["downLeft", [-1, -2]],
+      ["leftDown", [-2, -1]],
+      ["leftUp", [-2, 1]],
+      ["upLeft", [-1, 2]]
+    ]
+
+    for (let i = 0; i < validMoves.length; i++) {
+      for (let j = 0; j < MOVES.length; j++) {
+        if (validMoves[i] === MOVES[j][0]) {
+          let square = new Square(
+            [currentNode.position[0] + MOVES[j][1][0], 
+            currentNode.position[1] + MOVES[j][1][1]]
+          )
+          nodes.push(square)
+        }
+      }
+    }
+    return nodes
+  }
 }
 
-let square = new Square(0);
-square.printMoves()
+// let startingPosition = new Square();
+// startingPosition.printMoves()
+
+let knight = new Knight();
+
+knight.knightMoves([0,0])
