@@ -68,7 +68,12 @@ class Knight {
       currentNode = queue[pointer]
       const parentKey = this.#toKey(currentNode.position)
       if (parentKey === this.#toKey(destination)) {
-        return this.#computeShortestPath(currentNode)
+        console.log(`You made it in ${this.#computeShortestPath(currentNode).length - 1} moves. 
+        Here is your path:`)
+        for (let i = 1; i < this.#computeShortestPath(currentNode).length; i++) {
+          console.log(this.#computeShortestPath(currentNode)[i])
+          return
+        }
       }
       const validMoves = currentNode.validMoves
       // Enqueue all valid moves from current node
