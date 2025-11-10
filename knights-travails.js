@@ -51,7 +51,6 @@ class Square {
 
   printMoves(){
     this.validMoves.forEach(move => {
-      console.log(move)
     })
   }
 }
@@ -61,29 +60,45 @@ class Knight {
     let queue = []
     let pointer = 0
     let currentNode = new Square(start)
+    let visitedList = new Set()
     
-    queue.push(currentNode)
+    queue.push(currentNode)    
+    visitedList.add(this.#toKey(currentNode.position))
     while (pointer != queue.length) {
       currentNode = queue[pointer]
+      const parentKey = this.#toKey(currentNode.position)
+      if (parentKey === this.#toKey(destination)) {
+        return this.#computeShortestPath(currentNode)
+      }
       const validMoves = currentNode.validMoves
-      const position = currentNode.position  
-
       // Enqueue all valid moves from current node
       let queueOfValidMoves = this.#resolveMove(validMoves, currentNode)
-      queueOfValidMoves.forEach(move => {
-        if (!queue.includes(move)) {
-          queue.push(move)
-        } else {
-          console.log("already there")
+      queueOfValidMoves.forEach(child => {
+        const childKey = this.#toKey(child.position)
+        if (!visitedList.has(childKey)) {
+          visitedList.add(childKey)
+          queue.push(child)
+          child.previousSquare = currentNode
+          child.moveNumber = (currentNode.moveNumber ?? 0) + 1
         }
       });
-      console.log(` Queue length: ${queue.length}`)
       pointer++
     }
   }
 
+  #computeShortestPath(node) {        
+    const walk = []
+
+    while (node) {
+      walk.push(node.position)
+      node = node.previousSquare
+    }
+
+    walk.reverse()
+    return walk
+  }
+
   #resolveMove(validMoves, currentNode) {
-    console.log(validMoves)
     let nodes = []
     const MOVES = [
       ["upRight", [1, 2]],
@@ -109,6 +124,10 @@ class Knight {
     }
     return nodes
   }
+
+  #toKey([x,y]) {
+    return String([x,y])
+  }
 }
 
 // let startingPosition = new Square();
@@ -116,4 +135,4 @@ class Knight {
 
 let knight = new Knight();
 
-knight.knightMoves([0,0])
+console.log(knight.knightMoves([3,3], [4,3]))
