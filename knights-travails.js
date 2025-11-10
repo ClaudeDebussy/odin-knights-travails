@@ -64,16 +64,16 @@ class Knight {
     
     queue.push(currentNode)    
     visitedList.add(this.#toKey(currentNode.position))
-    while (pointer != queue.length) {
+    while (pointer < queue.length) {
       currentNode = queue[pointer]
       const parentKey = this.#toKey(currentNode.position)
       if (parentKey === this.#toKey(destination)) {
         console.log(`You made it in ${this.#computeShortestPath(currentNode).length - 1} moves. 
         Here is your path:`)
-        for (let i = 1; i < this.#computeShortestPath(currentNode).length; i++) {
-          console.log(this.#computeShortestPath(currentNode)[i])
-          return
+        for (let i = 0; i < this.#computeShortestPath(currentNode).length; i++) {
+          console.log(this.#computeShortestPath(currentNode)[i])          
         }
+
       }
       const validMoves = currentNode.validMoves
       // Enqueue all valid moves from current node
@@ -134,9 +134,6 @@ class Knight {
     return String([x,y])
   }
 }
-
-// let startingPosition = new Square();
-// startingPosition.printMoves()
 
 let knight = new Knight();
 
